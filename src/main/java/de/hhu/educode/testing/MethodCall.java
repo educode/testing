@@ -35,7 +35,8 @@ public class MethodCall<T> {
         var clazz = runtimeClass.getActual();
 
         try {
-            var method = clazz.getMethod(name, parameterTypes);
+            var method = clazz.getDeclaredMethod(name, parameterTypes);
+            method.setAccessible(true);
             if (!method.getReturnType().equals(returnType)) {
                 return fail("Expected method %s to return value of type <%s> but was <%s>",
                         toString(), returnType.getSimpleName(), method.getReturnType().getSimpleName());
