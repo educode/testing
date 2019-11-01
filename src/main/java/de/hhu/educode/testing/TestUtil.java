@@ -14,16 +14,16 @@ public final class TestUtil {
     private TestUtil() {
     }
 
-    public static Object newInstance(final ClassName className, Object... initargs) {
+    public static Object newInstance(final ClassName className, ConstructorCall constructorCall) {
         try {
             var clazz = Class.forName(className.toString());
-            var constructor = clazz.getConstructor(toType(initargs));
-            return constructor.newInstance(initargs);
+            var constructor = clazz.getConstructor(constructorCall.getParameterTypes());
+            return constructor.newInstance(constructorCall.getArgs());
         } catch (ClassNotFoundException e) {
             return fail("Expected class %s to exist but it didn't", className);
         } catch (NoSuchMethodException e) {
             return fail("Expected class %s to declare constructor %s but none was found",
-                    className, className + Arrays.stream(toType(initargs))
+                    className, className + Arrays.stream(constructorCall.getParameterTypes())
                             .map(Class::getSimpleName)
                             .collect(Collectors.joining(",", "(", ")")));
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
@@ -31,37 +31,33 @@ public final class TestUtil {
         }
     }
 
-    public static Object invoke(Object target, Class<?> returnType, String methodName, Object... args) {
-        return invoke(target, target.getClass(), returnType, methodName, args);
+    public static Object invoke(Object target, MethodCall methodCall) {
+        return invoke(target, target.getClass(), methodCall);
     }
 
-    public static Object invoke(Class<?> targetClass, Class<?> returnType, String methodName, Object... args) {
-        return invoke(null, targetClass, returnType, methodName, args);
+    public static Object invoke(Class<?> targetClass, MethodCall methodCall) {
+        return invoke(null, targetClass, methodCall);
     }
 
-    public static Object invoke(Object target, Class<?> targetClass, Class<?> returnType, String methodName, Object... args) {
+    public static Object invoke(Object target, Class<?> targetClass, MethodCall methodCall) {
         try {
-            var method = targetClass.getMethod(methodName, toType(args));
-            if (!method.getReturnType().equals(returnType)) {
+            var method = targetClass.getMethod(methodCall.getName(), methodCall.getParameterTypes());
+            if (!method.getReturnType().equals(methodCall.getReturnType())) {
                 return fail("Expected method %s to return value of type <%s> but was <%s>",
-                        methodName + Arrays.stream(toType(args))
+                        methodCall.getName() + Arrays.stream(methodCall.getParameterTypes())
                             .map(Class::getSimpleName)
                             .collect(Collectors.joining(",", "(", ")")),
-                        returnType.getSimpleName(), method.getReturnType().getSimpleName());
+                        methodCall.getReturnType().getSimpleName(), method.getReturnType().getSimpleName());
             }
 
-            return method.invoke(target, args);
+            return method.invoke(target, methodCall.getArgs());
         } catch (NoSuchMethodException e) {
             return fail("Expected class %s to declare method %s but it didn't",
-                    targetClass.getSimpleName(), methodName + Arrays.stream(toType(args))
+                    targetClass.getSimpleName(), methodCall.getName() + Arrays.stream(methodCall.getParameterTypes())
                             .map(Class::getSimpleName)
                             .collect(Collectors.joining(",", "(", ")")));
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static Class<?>[] toType(Object... objects) {
-        return Arrays.stream(objects).map(Object::getClass).toArray(Class<?>[]::new);
     }
 }
