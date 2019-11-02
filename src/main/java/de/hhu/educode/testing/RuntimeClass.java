@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.fail;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class RuntimeClass {
 
+    private static ClassLoader classLoader = RuntimeClass.class.getClassLoader();
+
     private final String name;
 
     private RuntimeClass(String name) {
@@ -15,9 +17,13 @@ public class RuntimeClass {
         return new RuntimeClass(className);
     }
 
+    public static void useClassLoader(ClassLoader classLoader) {
+        RuntimeClass.classLoader = classLoader;
+    }
+
     public Class<?> getActual() {
         try {
-            return Class.forName(name);
+            return classLoader.loadClass(name);
         } catch (ClassNotFoundException e) {
             return fail("Expected class %s to exist but it didn't", name);
         }
