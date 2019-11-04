@@ -53,7 +53,7 @@ public class MethodCall<T> {
             return fail("Expected class %s to declare method %s but it didn't",
                     clazz.getSimpleName(), toString());
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            return ReflectiveExceptions.handle(e);
         }
     }
 

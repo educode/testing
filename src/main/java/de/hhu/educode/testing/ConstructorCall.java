@@ -43,7 +43,7 @@ public class ConstructorCall {
             return fail("Expected class %s to declare constructor %s but none was found",
                     clazz.getSimpleName(), toString());
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            return ReflectiveExceptions.handle(e);
         }
     }
 
