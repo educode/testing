@@ -47,8 +47,8 @@ public class MethodCall<T> {
                         toString(), Modifier.toString(modifiers), Modifier.toString(method.getModifiers()));
             }
 
-            //noinspection JavaReflectionInvocation
-            return returnType.cast(method.invoke(target, args));
+            //noinspection JavaReflectionInvocation,unchecked
+            return (T) method.invoke(target, args);
         } catch (NoSuchMethodException e) {
             return fail("Expected class %s to declare method %s but it didn't",
                     clazz.getSimpleName(), toString());

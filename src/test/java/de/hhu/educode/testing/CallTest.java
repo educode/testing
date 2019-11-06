@@ -45,4 +45,20 @@ class CallTest {
         var instance = STRING_CONSTRUCTOR.invoke("Hello World");
         assertThatThrownBy(() -> NON_EXISTENT_METHOD.invoke(instance, "bar")).isInstanceOf(AssertionError.class);
     }
+
+    private static final RuntimeClass TEST_CLASS = RuntimeClass.forName("de.hhu.educode.testing.TestClass");
+
+    private static final MethodCall<Integer> FOO_METHOD = MethodCall.<Integer>builder()
+            .runtimeClass(TEST_CLASS)
+            .modifiers(Modifier.PRIVATE | Modifier.STATIC)
+            .returnType(int.class)
+            .name("foo")
+            .parameterTypes(new Class<?>[]{ int.class })
+            .build();
+
+    @Test
+    void testPrimitive() {
+        var substring = FOO_METHOD.invoke(null, 42);
+        assertThat(substring).isEqualTo(42);
+    }
 }
