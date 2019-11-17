@@ -12,7 +12,7 @@ ext {
 }
 
 group 'de.hhu.educode'
-version '1.0.3' + (Boolean.valueOf(System.getProperty('release')) ? '' : '-SNAPSHOT')
+version '1.0.4' + (Boolean.valueOf(System.getProperty('release')) ? '' : '-SNAPSHOT')
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -24,6 +24,7 @@ repositories {
 dependencies {
     api "org.junit.jupiter:junit-jupiter-api:${property('junitJupiterVersion')}"
     api "org.junit.jupiter:junit-jupiter-engine:${property('junitJupiterVersion')}"
+    api "org.junit.jupiter:junit-jupiter-params:${property('junitJupiterVersion')}"
     api "org.junit.platform:junit-platform-launcher:${property('junitPlatformVersion')}"
     api "org.junit.platform:junit-platform-engine:${property('junitPlatformVersion')}"
     api "org.junit.platform:junit-platform-commons:${property('junitPlatformVersion')}"
